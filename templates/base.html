@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% include 'css.html' %}
+    <title>TicketShop</title>
+</head>
+<body>
+{% include 'includes/navbar.html' %}
+
+<div class="jumbotron">
+    {% include 'includes/messages.html' %}
+    {% block body %}{% endblock %}
+</div>
+
+
+{% include 'includes/footer.html' %}
+
+
+</body>
+</html>
