@@ -49,6 +49,7 @@ class UserVerifyView(View):
             code = form.cleaned_data['code']
             existed_code = models.OTPcode.objects.filter(phone_number=phone_number)
             if int(code) == int(existed_code[0].code):
+                models.OTPcode.objects.filter(phone_number=phone_number).delete()
                 user = models.User(
                     phone_number=user_info['phone_number'],
                     id_card=user_info['id_card'],
@@ -84,6 +85,54 @@ class UserLoginView(View):
         messages.error(request, 'Invalid username or password', 'warning')
         return render(request, self.template_name, {'form': form,
                                                     'name': 'Login'})
+
+
+class UserSendCodeView(View):
+    form_class = forms.UserSendCodeForm
+    template_name = 'accounts/send_code.html'
+
+    def get(self, request):
+        form = self.form_class
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            phone_number = form.cleaned_data['phone_number']
+            models.OTPcode.create_otp(phone_number=phone_number)
+            request.session['user_registration_info'] = {
+                'phone_number': phone_number,
+            }
+            messages.success(request, 'We send you a code', 'success')
+            return redirect('accounts:send_code_verify')
+        messages.error(request, 'Invalid phone number', 'warning')
+        return render(request, self.template_name, {'form': form})
+
+
+class UserLoginVerifyView(View):
+    form_class = forms.UserVerificationForm
+    template_name = 'accounts/verify.html'
+
+    def get(self, request):
+        form = self.form_class
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
+        form = self.form_class(request.POST)
+        phone_number = request.session['user_registration_info']['phone_number']
+        if form.is_valid():
+            code = form.cleaned_data['code']
+            existed_code = models.OTPcode.objects.filter(phone_number=phone_number)
+            if int(code) == int(existed_code[0].code):
+                models.OTPcode.objects.filter(phone_number=code).delete()
+                login(request, authenticate(phone_number=phone_number))
+                messages.success(request, 'login successfully', 'success')
+                return redirect('home:home')
+        return render(request, self.template_name, {'form': form})
+
+
+
+
 
 
 

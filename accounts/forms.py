@@ -89,3 +89,12 @@ class UserLoginForm(forms.Form):
 
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control',
                                                                  'placeholder': 'Password'}))
+
+
+class UserSendCodeForm(forms.Form):
+    phone_number = forms.RegexField(
+        regex=r'^\d{10,15}$',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number'}),
+        error_messages={'invalid': 'Enter your phone number (10-15 digits).'}
+    )
+
