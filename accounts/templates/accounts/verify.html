@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}
+	{{ name }}
+{% endblock %}
+
+{% block body %}
+    <div class="d-flex justify-content-center align-items-center vh-100">
+        <form method="POST" class="col-md-4 p-4 border rounded shadow bg-white">
+            <h2 class="mb-3 text-center">Verification</h2>
+            <p class="text">We send you a code to your phone please enter the code.</p>
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="mb-3">
+                    {{ field }}
+                    <div class="text-danger">{{ field.errors }}</div>
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary w-100">Submit</button>
+
+        </form>
+    </div>
+{% endblock %}

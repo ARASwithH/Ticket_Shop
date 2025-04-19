@@ -12,11 +12,11 @@ class UserAdmin(BaseUserAdmin):
     add_form = UserCreateForm
 
     list_display = ('phone_number', 'id_card', )
-    list_filter = ('is_seller', 'is_active')
+    list_filter = ('is_staff', 'is_active')
 
     fieldsets = (
         ('Main', {'fields': ('phone_number', 'password', 'first_name', 'last_name', 'age')}),
-        ("Permissions", {"fields": ["is_staff", "is_active", "is_seller",]}),
+        ("Permissions", {"fields": ["is_staff", "is_active",]}),
     )
 
     add_fieldsets = (

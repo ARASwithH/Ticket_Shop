@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from .managers import UserManager
+import random
 
 
 # Create your models here.
@@ -14,13 +15,11 @@ class User(AbstractUser):
     id_card = models.CharField(max_length=10, unique=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-    is_seller = models.BooleanField(default=False)
 
     objects = UserManager()
 
     REQUIRED_FIELDS = ['first_name', 'last_name']
     USERNAME_FIELD = 'phone_number'
-
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
@@ -31,6 +30,19 @@ class User(AbstractUser):
     def has_module_perms(self, perm, obj=None):
         return True
 
-    @property
-    def is_staff(self):
-        return self.is_staff
+
+class OTPcode(models.Model):
+    phone_number = models.CharField(max_length=11, unique=True)
+    code = models.CharField(max_length=4)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    objects = UserManager()
+
+    def __str__(self):
+        return f'{self.code} - {self.phone_number}'
+
+    @classmethod
+    def create_otp(cls, phone_number):
+        code = str(random.randint(1000, 9999))
+        otp = cls.objects.create(phone_number=phone_number, code=code)
+        return otp

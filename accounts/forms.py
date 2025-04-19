@@ -30,3 +30,62 @@ class UserCreateForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+
+class UserRegistrationForm(forms.Form):
+    phone_number = forms.RegexField(
+        regex=r'^\d{10,15}$',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number'}),
+        error_messages={'invalid': 'Enter a valid phone number (10-15 digits).'}
+    )
+
+    id_card = forms.RegexField(
+        regex=r'^\d{10,15}$',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'ID Card'}),
+        error_messages={'invalid': 'Enter a valid phone number (10-15 digits).'}
+    )
+
+    first_name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control',
+                                                               'placeholder': 'First Name'}))
+
+    last_name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control',
+                                                              'placeholder': 'Last Name'}))
+
+    age = forms.IntegerField(widget=forms.TextInput(attrs={'class': 'form-control',
+                                                           'placeholder': 'Age'}))
+
+    password1 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control',
+                                                                  'placeholder': 'Password'}))
+
+    password2 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control',
+                                                                  'placeholder': 'Confirm Password'}))
+
+    def clean_phone_number(self):
+        phone_number = self.cleaned_data.get('phone_number')
+        user = User.objects.filter(phone_number=phone_number)
+        if user:
+            raise forms.ValidationError("Phone number already exist")
+        return phone_number
+
+    def clean_id_card(self):
+        id_card = self.cleaned_data.get('id_card')
+        user = User.objects.filter(id_card=id_card)
+        if user:
+            raise forms.ValidationError("id_card already exist")
+        return id_card
+
+
+class UserVerificationForm(forms.Form):
+    code = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control',
+                                                         'placeholder': 'Code'}))
+
+
+class UserLoginForm(forms.Form)
+    phone_number = forms.RegexField(
+        regex=r'^\d{10,15}$',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number'}),
+        error_messages={'invalid': 'Enter your phone number (10-15 digits).'}
+    )
+
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control',
+                                                                 'placeholder': 'Password'}))
