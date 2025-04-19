@@ -80,7 +80,7 @@ class UserVerificationForm(forms.Form):
                                                          'placeholder': 'Code'}))
 
 
-class UserLoginForm(forms.Form)
+class UserLoginForm(forms.Form):
     phone_number = forms.RegexField(
         regex=r'^\d{10,15}$',
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number'}),

@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractBaseUser
 from .managers import UserManager
 import random
 
@@ -7,7 +7,7 @@ import random
 # Create your models here.
 
 
-class User(AbstractUser):
+class User(AbstractBaseUser):
     phone_number = models.CharField(max_length=11, unique=True)
     first_name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200)

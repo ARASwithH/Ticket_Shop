@@ -49,14 +49,15 @@ class UserVerifyView(View):
             code = form.cleaned_data['code']
             existed_code = models.OTPcode.objects.filter(phone_number=phone_number)
             if int(code) == int(existed_code[0].code):
-                models.User.objects.create(
+                user = models.User(
                     phone_number=user_info['phone_number'],
                     id_card=user_info['id_card'],
                     first_name=user_info['first_name'],
                     last_name=user_info['last_name'],
                     age=user_info['age'],
-                    password=user_info['password'],
                 )
+                user.set_password(user_info['password'])
+                user.save()
                 return redirect('accounts:login')
         return render(request, self.template_name, {'form': form})
 
@@ -72,14 +73,17 @@ class UserLoginView(View):
 
     def post(self, request):
         form = self.form_class(request.POST)
+
         if form.is_valid():
             cd = form.cleaned_data
-            user = models.User.objects.get(phone_number=cd['phone_number'],
-                                           password=cd['password'])
-            login(request, user)
-            messages.success(request, 'You are now logged in', 'success')
-            return redirect('home:home')
-        return render(request, self.template_name, {'form': form})
+            user = authenticate(username=cd['phone_number'], password=cd['password'])
+            if user is not None:
+                login(request, user)
+                messages.success(request, f'{user.last_name} logged in', 'success')
+                return redirect('home:home')
+        messages.error(request, 'Invalid username or password', 'warning')
+        return render(request, self.template_name, {'form': form,
+                                                    'name': 'Login'})
 
 
 
