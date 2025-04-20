@@ -9,16 +9,15 @@ import random
 
 class User(AbstractBaseUser):
     phone_number = models.CharField(max_length=11, unique=True)
-    first_name = models.CharField(max_length=200)
-    last_name = models.CharField(max_length=200)
-    age = models.IntegerField(default=0)
+    first_name = models.CharField(max_length=200, blank=True, null=True)
+    last_name = models.CharField(max_length=200, blank=True, null=True)
     id_card = models.CharField(max_length=10, unique=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
     objects = UserManager()
 
-    REQUIRED_FIELDS = ['first_name', 'last_name']
+    REQUIRED_FIELDS = ['id_card']
     USERNAME_FIELD = 'phone_number'
 
     def __str__(self):

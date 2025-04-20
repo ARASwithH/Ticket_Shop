@@ -10,11 +10,8 @@ class UserCreateForm(forms.ModelForm):
     class Meta:
         model = User
         fields = (
-            'first_name',
-            'last_name',
             'id_card',
             'phone_number',
-            'age',
         )
 
     def clean_password2(self):
@@ -44,15 +41,6 @@ class UserRegistrationForm(forms.Form):
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'ID Card'}),
         error_messages={'invalid': 'Enter a valid phone number (10-15 digits).'}
     )
-
-    first_name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control',
-                                                               'placeholder': 'First Name'}))
-
-    last_name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control',
-                                                              'placeholder': 'Last Name'}))
-
-    age = forms.IntegerField(widget=forms.TextInput(attrs={'class': 'form-control',
-                                                           'placeholder': 'Age'}))
 
     password1 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control',
                                                                   'placeholder': 'Password'}))

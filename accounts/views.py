@@ -24,9 +24,6 @@ class UserRegistrationView(View):
             request.session['user_registration_info'] = {
                 'phone_number': cd['phone_number'],
                 'id_card': cd['id_card'],
-                'first_name': cd['first_name'],
-                'last_name': cd['last_name'],
-                'age': cd['age'],
                 'password': cd['password1'],
             }
             messages.success(request, 'We send you a code', 'success')
@@ -53,9 +50,6 @@ class UserVerifyView(View):
                 user = models.User(
                     phone_number=user_info['phone_number'],
                     id_card=user_info['id_card'],
-                    first_name=user_info['first_name'],
-                    last_name=user_info['last_name'],
-                    age=user_info['age'],
                 )
                 user.set_password(user_info['password'])
                 user.save()
@@ -125,7 +119,8 @@ class UserLoginVerifyView(View):
             existed_code = models.OTPcode.objects.filter(phone_number=phone_number)
             if int(code) == int(existed_code[0].code):
                 models.OTPcode.objects.filter(phone_number=code).delete()
-                login(request, authenticate(phone_number=phone_number))
+                user = models.User.objects.filter(phone_number=phone_number).first()
+                login(request, user)
                 messages.success(request, 'login successfully', 'success')
                 return redirect('home:home')
         return render(request, self.template_name, {'form': form})
