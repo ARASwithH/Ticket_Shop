@@ -132,6 +132,13 @@ class UserLoginVerifyView(View):
 
 
 
+class UserLogoutView(View):
+    def get(self, request):
+        logout(request)
+        messages.success(request, 'You have been logged out', 'success')
+        return redirect('home:home')
+
+
 
 
 
