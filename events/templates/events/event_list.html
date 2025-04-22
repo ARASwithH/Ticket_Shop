@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+
+
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Upcoming Events</h1>
+
+    <div class="row">
+        {% for event in events %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <img src="{{ event.image.url }}" class="card-img-top" alt="{{ event.name }} Image" style="height: 200px; object-fit: cover;">
+                <div class="card-body">
+                    <h5 class="card-title">{{ event.name }}</h5>
+                    <p class="card-text">{{ event.description|slice:":100" }}...</p>
+                    <p class="card-text"><strong>Location:</strong> {{ event.location }}</p>
+                    <p class="card-text"><strong>Date:</strong> {{ event.start_date|date:"D, d M Y H:i" }} - {{ event.end_date|date:"D, d M Y H:i" }}</p>
+                    <p class="card-text"><strong>Price:</strong> ${{ event.price_per_ticket }}</p>
+                    <p class="card-text"><strong>Capacity:</strong> {{ event.capacity }} tickets available</p>
+                    <a href="#" class="btn btn-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="col-12 text-center">No upcoming events available at the moment.</p>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination (if applicable) -->
+    <div class="pagination justify-content-center">
+        {% if events.has_previous %}
+        <a href="?page=1" class="btn btn-outline-primary">First</a>
+        <a href="?page={{ events.previous_page_number }}" class="btn btn-outline-primary">Previous</a>
+        {% endif %}
+
+        <span class="mx-2">Page {{ events.number }} of {{ events.paginator.num_pages }}</span>
+
+        {% if events.has_next %}
+        <a href="?page={{ events.next_page_number }}" class="btn btn-outline-primary">Next</a>
+        <a href="?page={{ events.paginator.num_pages }}" class="btn btn-outline-primary">Last</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
