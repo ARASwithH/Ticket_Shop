@@ -1,9 +1,10 @@
 from django.shortcuts import render
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from .forms import EventForm
 from .models import Event
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
 
 
 # Create your views here.
@@ -29,4 +30,18 @@ class EventCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.organizer = self.request.user
+        messages.success(self.request, 'Event created.')
         return super().form_valid(form)
+
+
+class EventUpdateView(LoginRequiredMixin, UpdateView):
+    model = Event
+    form_class = EventForm
+    template_name = 'events/event_update.html'
+    success_url = reverse_lazy('events:list')
+
+    def form_valid(self, form):
+        form.instance.organizer = self.request.user
+        messages.success(self.request, 'Your event has been updated.')
+        return super().form_valid(form)
+

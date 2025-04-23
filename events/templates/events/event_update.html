@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+
+<div class="container mt-5">
+    <h2>Update Event</h2>
+    <form method="post" enctype="multipart/form-data" class="mt-4 border p-4 bg-white shadow-sm rounded">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {% for field in form %}
+            <div class="mb-3">
+                <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    <div class="text-danger">{{ field.errors }}</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Update</button>
+    </form>
+</div>
+
+
+{% endblock %}
