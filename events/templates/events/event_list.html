@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block body %}
 
@@ -11,7 +12,7 @@
         {% for event in events %}
         <div class="col-md-4 mb-4">
             <div class="card">
-                <img src="{{ event.image.url }}" class="card-img-top" alt="{{ event.name }} Image" style="height: 200px; object-fit: cover;">
+                <img src="{% if event.image %}{{ event.image.url }}{% else %}{% static 'events/images/default_event_image.webp' %}{% endif %}" class="card-img-top" alt="{{ event.name }} Image" style="height: 200px; object-fit: cover;">
                 <div class="card-body">
                     <h5 class="card-title">{{ event.name }}</h5>
                     <p class="card-text">{{ event.description|slice:":100" }}...</p>
