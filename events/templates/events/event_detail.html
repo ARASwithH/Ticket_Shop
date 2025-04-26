@@ -24,12 +24,37 @@
             <p><strong>Price per Ticket:</strong> ${{ event.price_per_ticket }}</p>
             <p><strong>Capacity:</strong> {{ event.capacity }} tickets available</p>
             <p><strong>Organizer:</strong> {{ event.organizer.username }}</p>
+
+            <!-- Purchase Form (Visible to Users who are NOT the event owner) -->
+            {% if user != event.organizer %}
+            <hr>
+            <h4>Purchase Tickets</h4>
+
+            <form method="POST" action="{% url 'cart:add_cart' event.id %}">
+                {% csrf_token %}
+                <div class="form-group d-flex flex-column align-items-start">
+                    {% for foo in form %}
+                        {{ foo }}
+                    {% endfor %}
+                    <button type="submit" class="btn btn-primary w-25">Purchase</button>
+                </div>
+            </form>
+
+
+
+            {% endif %}
+
+
         </div>
     </div>
 
-    <!-- Back to events list button -->
     <div class="mt-4 text-center">
         <a href="{% url 'events:list' %}" class="btn btn-secondary">Back to Events</a>
+
+
+        {% if user == event.organizer %}
+        <a href="{% url 'events:update' event.id %}" class="btn btn-warning">Update Event</a>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

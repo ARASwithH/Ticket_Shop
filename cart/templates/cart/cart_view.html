@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+<div class="container my-5">
+    <h1 class="mb-4">Your Cart</h1>
+
+{#    {% if cart %}#}
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Event</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Total</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart %}
+                        <tr>
+                            <td scope="row">{{ forloop.counter }}</td>
+                            <td>{{ item.event.name }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>${{ item.price }}</td>
+                            <td>{{ item.total_price }}</td>
+                            <td>
+                                <form method="post" action="#">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <div class="d-flex justify-content-end mt-4">
+                    <h4>Total: $</h4>
+                </div>
+
+                <div class="d-flex justify-content-end mt-3">
+                    <a href="#" class="btn btn-primary btn-lg">Proceed to Checkout</a>
+                </div>
+            </div>
+        </div>
+{#    {% else %}#}
+{#        <div class="alert alert-info" role="alert">#}
+{#            Your cart is empty.#}
+{#        </div>#}
+{#    {% endif %}#}
+</div>
+{% endblock %}

@@ -1,6 +1,7 @@
 from django import forms
 from .models import Event
 
+
 class EventForm(forms.ModelForm):
     class Meta:
         model = Event
@@ -16,3 +17,11 @@ class EventForm(forms.ModelForm):
             'capacity': forms.NumberInput(attrs={'class': 'form-control'}),
             'image': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }
+
+
+class AddCartForm(forms.Form):
+    quantity = forms.IntegerField(
+        min_value=1,
+        max_value=10,
+        widget=forms.NumberInput(attrs={'class': 'form-control mb-2 w-25'})
+    )

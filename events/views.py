@@ -1,7 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
-from .forms import EventForm
+from .forms import EventForm, AddCartForm
 from .models import Event
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
@@ -20,6 +20,15 @@ class EventDetailView(DetailView):
     model = Event
     template_name = 'events/event_detail.html'
     context_object_name = 'event'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = AddCartForm()
+        return context
+
+    def post(self, request, *args, **kwargs):
+        return redirect('cart:')
+
 
 
 class EventCreateView(LoginRequiredMixin, CreateView):
