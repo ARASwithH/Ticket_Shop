@@ -5,7 +5,7 @@
 <div class="container my-5">
     <h1 class="mb-4">Your Cart</h1>
 
-{#    {% if cart %}#}
+    {% if cart %}
         <div class="card shadow-sm">
             <div class="card-body">
                 <table class="table table-hover">
@@ -28,7 +28,7 @@
                             <td>${{ item.price }}</td>
                             <td>{{ item.total_price }}</td>
                             <td>
-                                <form method="post" action="#">
+                                <form method="post" action="{% url 'cart:remove_cart' item.event.id %}">
                                     {% csrf_token %}
                                     <button type="submit" class="btn btn-danger btn-sm">Remove</button>
                                 </form>
@@ -39,7 +39,7 @@
                 </table>
 
                 <div class="d-flex justify-content-end mt-4">
-                    <h4>Total: $</h4>
+                    <h4>Total: ${{ cart.get_total_price }}</h4>
                 </div>
 
                 <div class="d-flex justify-content-end mt-3">
@@ -47,10 +47,10 @@
                 </div>
             </div>
         </div>
-{#    {% else %}#}
-{#        <div class="alert alert-info" role="alert">#}
-{#            Your cart is empty.#}
-{#        </div>#}
-{#    {% endif %}#}
+    {% else %}
+        <div class="alert alert-info" role="alert">
+            Your cart is empty.
+        </div>
+    {% endif %}
 </div>
 {% endblock %}
