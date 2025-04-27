@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block body %}
+	<div class="container my-5">
+    <h1 class="mb-4">Checkout</h1>
+
+    <div class="row">
+        <!-- Cart Summary -->
+        <div class="col-md-7">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Order Summary</h5>
+
+                    {% if cart %}
+                        <ul class="list-group list-group-flush">
+                            {% for item in cart %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>{{ item.event.name }}</strong><br>
+                                    <small>{{ item.quantity }} ticket{{ item.quantity|pluralize }}</small>
+                                </div>
+                                <span>${{ item.total_price}}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+                            <h5>Total:</h5>
+                            <h4>${{ cart.get_total_price }}</h4>
+                        </div>
+                    {% else %}
+                        <p>Your cart is empty.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Checkout Form -->
+        <div class="col-md-5">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Your Details</h5>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        {% for foo in form1 %}
+                        	<div class="mb-3">
+                            <label for="name" class="form-label">{{ foo.label }}</label>
+                            {{ foo }}
+                            </div>
+                        {% endfor %}
+
+                        <div class="mb-3">
+                            <label for="payment_method" class="form-label">Payment Method</label>
+                            {{ form2.payment_methods }}
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100">Confirm Purchase</button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
