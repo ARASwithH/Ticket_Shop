@@ -22,6 +22,17 @@ class EventForm(forms.ModelForm):
 class AddCartForm(forms.Form):
     quantity = forms.IntegerField(
         min_value=1,
-        max_value=10,
         widget=forms.NumberInput(attrs={'class': 'form-control mb-2 w-25'})
     )
+
+    def __init__(self, *args, **kwargs):
+        capacity = kwargs.pop('capacity', None)
+        super().__init__(*args, **kwargs)
+        if capacity is not None:
+            self.fields['quantity'] = forms.IntegerField(
+                min_value=1,
+                max_value=capacity,
+                widget=forms.NumberInput(attrs={
+                    'class': 'form-control mb-2 w-25',
+                })
+            )
