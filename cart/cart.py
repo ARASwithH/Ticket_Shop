@@ -1,4 +1,5 @@
 from events.models import Event
+from .models import Payment, Ticket, CartModel
 
 CART_SESSION_ID = 'cart'
 
@@ -6,6 +7,7 @@ CART_SESSION_ID = 'cart'
 class Cart:
     def __init__(self, request):
         self.session = request.session
+        self.user = request.user
         cart = self.session.get('CART_SESSION_ID')
         if not cart:
             cart = self.session['CART_SESSION_ID'] = {}
@@ -46,3 +48,54 @@ class Cart:
         for event in self:
             total_price += event['total_price']
         return total_price
+
+    def clear(self):
+        self.session['CART_SESSION_ID'] = {}
+        self.save()
+
+    def save_payment_info(self, payment_method, total_price, status='complete'):
+
+        Payment.objects.create(
+            from_user=self.user,
+            amount=total_price,
+            payment_method=payment_method,
+            status=status
+        )
+
+    def save_tickets(self):
+        event_ids = self.cart.keys()
+        events = Event.objects.filter(id__in=event_ids)
+        tickets = []
+
+        for item in events:
+            ticket = Ticket.objects.create(
+                user=self.user,
+                event=item,
+                quantity=self.cart[f'{item.id}']['quantity'],
+            )
+            tickets.append(ticket)
+
+        return tickets
+
+    def save_cart(self, tickets):
+        cart = CartModel.objects.create(
+            user=self.user,
+        )
+        for item in tickets:
+            cart.tickets.add(item)
+
+    def change_event_quantity(self):
+        event_ids = self.cart.keys()
+        events = Event.objects.filter(id__in=event_ids)
+
+        for item in events:
+            print(self.cart[f'{item.id}']['quantity'])
+            print(item.capacity)
+
+            new_cap = item.capacity - int(self.cart[f'{item.id}']['quantity'])
+            item.capacity = new_cap
+            item.save()
+
+
+
+

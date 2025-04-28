@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
 from .cart import Cart
@@ -47,18 +48,37 @@ class ConfirmCartView(View):
                                                         'cart': cart})
 
     def post(self, request):
+        cart = Cart(request)
         user = request.user
         form1 = UserUpdateForm(request.POST, instance=user)
         form2 = PaymentMethodForm(request.POST)
         if form1.is_valid() and form2.is_valid():
             form1.save()
             pay_method = form2.cleaned_data['payment_methods']
-            if pay_method == 'paypal':
-                print(pay_method)
-            if pay_method == 'credit':
-                print(pay_method)
-            if pay_method == 'cash':
-                print(pay_method)
-            return redirect('home:home')
+            total_price = cart.get_total_price()
+
+            payment_response = self.send_payment(request)
+
+            if payment_response:
+                cart.save_payment_info(pay_method, total_price)
+                tickets = cart.save_tickets()
+                cart.save_cart(tickets)
+                cart.change_event_quantity()
+                cart.clear()
+                messages.success(request, 'Your payment was successful!', 'success')
+                return redirect('home:home')
+            else:
+                cart.save_payment_info(pay_method, total_price, status='error')
+                messages.warning(request, 'Your payment has error!', 'warning')
+                return render(request, 'cart/final_view.html', {'form1': form1,
+                                                                'form2': form2,
+                                                                'cart': cart})
+
         return render(request, 'cart/final_view.html', {'form1': form1,
-                                                        'form2': form2,})
+                                                        'form2': form2,
+                                                        'cart': cart})
+
+    def send_payment(self, request):
+        '''uncomplete'''
+        return True
+
