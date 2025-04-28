@@ -4,6 +4,15 @@ from accounts.models import User
 
 # Create your models here.
 
+
+class Category(models.Model):
+    name = models.CharField(max_length=255)
+    slug = models.SlugField(max_length=255, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
 class Event(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
@@ -14,6 +23,8 @@ class Event(models.Model):
     capacity = models.IntegerField()
     organizer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='events')
     image = models.ImageField(upload_to='events/%Y/%m/%d/', null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    category = models.ManyToManyField(Category, related_name='events', default=0)
 
     def __str__(self):
         return self.name

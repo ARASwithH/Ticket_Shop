@@ -6,7 +6,7 @@ class EventForm(forms.ModelForm):
     class Meta:
         model = Event
         fields = ['name', 'description', 'start_date', 'end_date', 'location',
-                  'price_per_ticket', 'capacity', 'image']
+                  'price_per_ticket', 'capacity', 'image', 'category',]
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
@@ -16,6 +16,7 @@ class EventForm(forms.ModelForm):
             'price_per_ticket': forms.NumberInput(attrs={'class': 'form-control'}),
             'capacity': forms.NumberInput(attrs={'class': 'form-control'}),
             'image': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'category': forms.CheckboxSelectMultiple(),
         }
 
 

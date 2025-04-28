@@ -23,7 +23,7 @@
             <p><strong>End Date:</strong> {{ event.end_date|date:"D, d M Y H:i" }}</p>
             <p><strong>Price per Ticket:</strong> ${{ event.price_per_ticket }}</p>
             <p><strong>Capacity:</strong> {{ event.capacity }} tickets available</p>
-            <p><strong>Organizer:</strong> {{ event.organizer.username }}</p>
+            <p><strong>Organizer:</strong> {{ event.organizer }}</p>
 
             <!-- Purchase Form (Visible to Users who are NOT the event owner) -->
             {% if user != event.organizer %}
