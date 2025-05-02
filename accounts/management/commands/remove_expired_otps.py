@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from datetime import datetime, timedelta
+from datetime import timedelta
 from accounts import models
 from django.utils import timezone
 
