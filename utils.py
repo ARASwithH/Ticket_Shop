@@ -2,6 +2,7 @@ from django.contrib.sites import requests
 
 
 def send_otp(phone_num, code):
+    print(phone_num, code)
     pass
 
 

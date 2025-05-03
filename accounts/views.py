@@ -3,6 +3,7 @@ from . import models, forms
 from django.views import View
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+import utils
 
 
 # Create your views here.
@@ -21,6 +22,7 @@ class UserRegistrationView(View):
         if form.is_valid():
             cd = form.cleaned_data
             code = models.OTPcode.create_otp(phone_number=cd['phone_number'])
+            utils.send_otp(code=code, phone_num=cd['phone_number'])
             request.session['user_registration_info'] = {
                 'phone_number': cd['phone_number'],
                 'id_card': cd['id_card'],
@@ -34,6 +36,7 @@ class UserRegistrationView(View):
 class UserVerifyView(View):
     form_class = forms.UserVerificationForm
     template_name = 'accounts/verify.html'
+
     def get(self, request):
         form = self.form_class
         return render(request, self.template_name, {'form': form})
@@ -55,7 +58,6 @@ class UserVerifyView(View):
                 user.save()
                 return redirect('accounts:login')
         return render(request, self.template_name, {'form': form})
-
 
 
 class UserLoginView(View):
@@ -93,7 +95,8 @@ class UserSendCodeView(View):
         form = self.form_class(request.POST)
         if form.is_valid():
             phone_number = form.cleaned_data['phone_number']
-            models.OTPcode.create_otp(phone_number=phone_number)
+            code = models.OTPcode.create_otp(phone_number=phone_number)
+            utils.send_otp(code=code, phone_num=phone_number)
             request.session['user_registration_info'] = {
                 'phone_number': phone_number,
             }
@@ -126,17 +129,8 @@ class UserLoginVerifyView(View):
         return render(request, self.template_name, {'form': form})
 
 
-
 class UserLogoutView(View):
     def get(self, request):
         logout(request)
         messages.success(request, 'You have been logged out', 'success')
         return redirect('home:home')
-
-
-
-
-
-
-
-
