@@ -25,5 +25,5 @@ urlpatterns = [
     path('accounts/', include('accounts.urls', namespace='accounts')),
     path('events/', include('events.urls', namespace='events')),
     path('cart/', include('cart.urls', namespace='cart')),
-    path('panel/<int:id>/', include('panel.urls', namespace='panel')),
+    path('panel/', include('panel.urls', namespace='panel')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

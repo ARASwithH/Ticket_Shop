@@ -1,35 +1,38 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block body %}
+<div class="d-flex">
+    <!-- Sidebar -->
+    <div class="sidebar d-flex flex-column p-3 shadow" style="min-width: 200px; height: 100vh;">
+        <ul class="nav nav-pills flex-column mb-auto mt-5">
+            <li class="nav-item">
+                <a href="{% url 'panel:index' %}" class="nav-link {% if request.path == '/panel/' %}active text-white bg-primary{% else %}link-dark{% endif %}">Index</a>
+            </li>
+            <li>
+                <a href="{% url 'panel:events' %}" class="nav-link {% if request.path == '/panel/events/' %}active text-white bg-primary{% else %}link-dark{% endif %}">Events</a>
+            </li>
+            <li>
+                <a href="#" class="nav-link {% if request.path == '/panel/tickets/' %}active text-white bg-primary{% else %}link-dark{% endif %}">Tickets</a>
+            </li>
+            <li>
+                <a href="#" class="nav-link {% if request.path == '/panel/payments/' %}active text-white bg-primary{% else %}link-dark{% endif %}">Payments</a>
+            </li>
+            <li>
+                <a href="#" class="nav-link {% if request.path == '/panel/orders/' %}active text-white bg-primary{% else %}link-dark{% endif %}">Orders</a>
+            </li>
+            <li>
+                <a href="#" class="nav-link {% if request.path == '/panel/account/' %}active text-white bg-primary{% else %}link-dark{% endif %}">Account Management</a>
+            </li>
+        </ul>
+    </div>
 
-	<div class="sidebar d-flex flex-column p-3 shadow">
-    <ul class="nav nav-pills flex-column mb-auto">
-        <li class="nav-item">
-            <a href="#" class="nav-link link-dark">Index</a>
-        </li>
-        <li>
-            <a href="#" class="nav-link link-dark">Events</a>
-        </li>
-        <li>
-            <a href="#" class="nav-link link-dark">Tickets</a>
-        </li>
-        <li>
-            <a href="#" class="nav-link link-dark">Payments</a>
-        </li>
-        <li>
-            <a href="#" class="nav-link link-dark">Orders</a>
-        </li>
-        <li>
-            <a href="#" class="nav-link link-dark">Account Management</a>
-        </li>
-    </ul>
+    <!-- Main Content -->
+    <div class="content flex-grow-1 p-4">
+        {% block content %}
+        {% endblock %}
+    </div>
 </div>
 
-<div class="content">
-    {% block content %}
-
-    {% endblock %}
-</div>
-
-{#<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>#}
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
 {% endblock %}
