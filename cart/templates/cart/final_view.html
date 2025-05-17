@@ -11,22 +11,22 @@
                 <div class="card-body">
                     <h5 class="card-title mb-3">Order Summary</h5>
 
-                    {% if cart %}
+                    {% if order %}
                         <ul class="list-group list-group-flush">
-                            {% for item in cart %}
+                            {% for item in order.tickets.all %}
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 <div>
                                     <strong>{{ item.event.name }}</strong><br>
                                     <small>{{ item.quantity }} ticket{{ item.quantity|pluralize }}</small>
                                 </div>
-                                <span>${{ item.total_price}}</span>
+                                <span>${{ item.get_total_price}}</span>
                             </li>
                             {% endfor %}
                         </ul>
 
                         <div class="d-flex justify-content-between align-items-center mt-4">
                             <h5>Total:</h5>
-                            <h4>${{ cart.get_total_price }}</h4>
+                            <h4>${{ order.total_price }}</h4>
                         </div>
                     {% else %}
                         <p>Your cart is empty.</p>

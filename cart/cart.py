@@ -80,21 +80,14 @@ class Cart:
     def save_cart(self, tickets):
         cart = CartModel.objects.create(
             user=self.user,
+            total_price=self.get_total_price(),
         )
         for item in tickets:
             cart.tickets.add(item)
 
-    def change_event_quantity(self):
-        event_ids = self.cart.keys()
-        events = Event.objects.filter(id__in=event_ids)
+        return cart
 
-        for item in events:
-            print(self.cart[f'{item.id}']['quantity'])
-            print(item.capacity)
 
-            new_cap = item.capacity - int(self.cart[f'{item.id}']['quantity'])
-            item.capacity = new_cap
-            item.save()
 
 
 

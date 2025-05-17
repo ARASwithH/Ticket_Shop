@@ -4,10 +4,14 @@ from django.views import View
 from .cart import Cart
 from events.models import Event
 from events.forms import AddCartForm
-from accounts.models import User
 from accounts.forms import UserUpdateForm
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .forms import PaymentMethodForm
+from .forms import PaymentMethodForm, DiscountForm
+from .models import CartModel
+from .models import DiscountCode
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from django.http import JsonResponse
 
 
 # Create your views here.
@@ -15,7 +19,17 @@ from .forms import PaymentMethodForm
 class CartView(View):
     def get(self, request):
         cart = Cart(request)
-        return render(request, 'cart/cart_view.html', {'cart': cart})
+        form = DiscountForm()
+        return render(request, 'cart/cart_view.html', {'cart': cart, 'form': form})
+
+
+class CreatOrderView(View):
+    def get(self, request):
+        cart = Cart(request)
+        tickets = cart.save_tickets()
+        orders = cart.save_cart(tickets)
+        print(orders.id)
+        return redirect('cart:confirm_cart', orders.id)
 
 
 class AddCartView(LoginRequiredMixin, View):
@@ -38,32 +52,35 @@ class RemoveCartView(View):
 
 
 class ConfirmCartView(View):
-    def get(self, request):
+    def get(self, request, ord_id):
         user = request.user
+        order = get_object_or_404(CartModel, id=ord_id)
         form1 = UserUpdateForm(instance=user)
         form2 = PaymentMethodForm()
-        cart = Cart(request)
         return render(request, 'cart/final_view.html', {'form1': form1,
                                                         'form2': form2,
-                                                        'cart': cart})
+                                                        'order': order,
+                                                        })
 
-    def post(self, request):
-        cart = Cart(request)
+    def post(self, request, ord_id):
         user = request.user
+        order = get_object_or_404(CartModel, id=ord_id)
+        cart = Cart(request)
         form1 = UserUpdateForm(request.POST, instance=user)
         form2 = PaymentMethodForm(request.POST)
         if form1.is_valid() and form2.is_valid():
             form1.save()
             pay_method = form2.cleaned_data['payment_methods']
-            total_price = cart.get_total_price()
+            total_price = order.total_price
 
             payment_response = self.send_payment(request)
 
             if payment_response:
-                cart.save_payment_info(pay_method, total_price)
-                tickets = cart.save_tickets()
-                cart.save_cart(tickets)
-                cart.change_event_quantity()
+                cart.save_payment_info(pay_method, total_price, status='success')
+                order.paid = True
+                for ticket in order.tickets.all():
+                    ticket.paid = True
+                order.change_event_quantity()
                 cart.clear()
                 messages.success(request, 'Your payment was successful!', 'success')
                 return redirect('home:home')
@@ -79,6 +96,26 @@ class ConfirmCartView(View):
                                                         'cart': cart})
 
     def send_payment(self, request):
-        '''uncomplete'''
+        """uncomplete"""
         return True
+
+
+
+# class ApplyDiscountView(View):
+#     def post(self, request):
+#         form = DiscountForm(request.POST)
+#         cart = Cart(request)
+#         total = cart.get_total_price()
+#
+#         if form.is_valid():
+#             code = form.cleaned_data['code']
+#             try:
+#                 discount = DiscountCode.objects.get(code__exact=code)
+#                 if discount.is_valid():
+#
+#
+#             except DiscountCode.DoesNotExist:
+#                 pass
+
+
 

@@ -10,3 +10,9 @@ class PaymentMethodForm(forms.Form):
 
     payment_methods = forms.ChoiceField(choices=METHODS, widget=forms.Select(attrs={'class': 'form-control'}))
 
+
+class DiscountForm(forms.Form):
+    code = forms.CharField(max_length=10, required=False, widget=forms.TextInput(
+        attrs={'class': 'form-control w-25 me-3',
+               'placeholder': 'Discount Code'}))
+
