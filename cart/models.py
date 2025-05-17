@@ -15,6 +15,24 @@ def generate_unique_code(length=10):
         if not DiscountCode.objects.filter(code=code).exists():
             return code
 
+class DiscountCode(models.Model):
+    code = models.CharField(max_length=10, unique=True, editable=False)
+    event = models.ManyToManyField(Event, related_name='discount_codes')
+    discount_percent = models.PositiveIntegerField(help_text="e.g., 10 for 10%")
+    active = models.BooleanField(default=True)
+    valid_until = models.DateTimeField()
+
+    def is_valid(self):
+        return self.active and timezone.now() < self.valid_until
+
+    def save(self, *args, **kwargs):
+        if not self.code:
+            self.code = generate_unique_code()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f'{self.code} - {self.event}'
+
 
 class Payment(models.Model):
     from_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='payment')
@@ -45,6 +63,7 @@ class CartModel(models.Model):
     tickets = models.ManyToManyField(Ticket)
     total_price = models.IntegerField()
     paid = models.BooleanField(default=False)
+    discount = models.ForeignKey(DiscountCode, on_delete=models.CASCADE, related_name='carts', null=True, blank=True)
 
     def __str__(self):
         return f'{self.user} - {self.tickets}'
@@ -54,34 +73,10 @@ class CartModel(models.Model):
             ticket.event.capacity -= ticket.quantity
             ticket.event.save()
 
-        # event_ids = self.cart.keys()
-        # events = Event.objects.filter(id__in=event_ids)
-        #
-        # for item in events:
-        #     print(self.cart[f'{item.id}']['quantity'])
-        #     print(item.capacity)
-        #
-        #     new_cap = item.capacity - int(self.cart[f'{item.id}']['quantity'])
-        #     item.capacity = new_cap
-        #     item.save()
+    def get_discounted_total_price(self):
+        if self.discount is not None:
+            return self.total_price * self.discount.discount_percent / 100
 
-
-class DiscountCode(models.Model):
-    code = models.CharField(max_length=10, unique=True, editable=False)
-    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='discount_codes')
-    discount_percent = models.PositiveIntegerField(help_text="e.g., 10 for 10%")
-    active = models.BooleanField(default=True)
-    valid_until = models.DateTimeField()
-
-    def is_valid(self):
-        return self.active and timezone.now() < self.valid_until
-
-    def save(self, *args, **kwargs):
-        if not self.code:
-            self.code = generate_unique_code()
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return f'{self.code} - {self.event}'
-
+    def get_total_price(self):
+        return self.total_price
 

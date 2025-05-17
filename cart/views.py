@@ -9,9 +9,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import PaymentMethodForm, DiscountForm
 from .models import CartModel
 from .models import DiscountCode
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
-from django.http import JsonResponse
 
 
 # Create your views here.
@@ -57,9 +54,15 @@ class ConfirmCartView(View):
         order = get_object_or_404(CartModel, id=ord_id)
         form1 = UserUpdateForm(instance=user)
         form2 = PaymentMethodForm()
+        if order.discount is not None:
+            discountform = DiscountForm(initial={'code': order.discount.code})
+            discountform.fields['code'].widget.attrs['readonly'] = True
+        else:
+            discountform = DiscountForm()
         return render(request, 'cart/final_view.html', {'form1': form1,
                                                         'form2': form2,
                                                         'order': order,
+                                                        'discountform': discountform,
                                                         })
 
     def post(self, request, ord_id):
@@ -100,22 +103,40 @@ class ConfirmCartView(View):
         return True
 
 
+class ApplyDiscountView(View):
+    def get(self, request, ord_id):
+        dc_code = request.GET.get('code')
+        order = get_object_or_404(CartModel, id=ord_id)
 
-# class ApplyDiscountView(View):
-#     def post(self, request):
-#         form = DiscountForm(request.POST)
-#         cart = Cart(request)
-#         total = cart.get_total_price()
-#
-#         if form.is_valid():
-#             code = form.cleaned_data['code']
-#             try:
-#                 discount = DiscountCode.objects.get(code__exact=code)
-#                 if discount.is_valid():
-#
-#
-#             except DiscountCode.DoesNotExist:
-#                 pass
+        if not dc_code:
+            messages.error(request, 'No discount code provided.', 'error')
+            return redirect('cart:confirm_cart', ord_id)
+
+        try:
+            discount = DiscountCode.objects.get(code=dc_code)
+        except DiscountCode.DoesNotExist:
+            messages.error(request, 'Discount code does not exist!', 'error')
+            return redirect('cart:confirm_cart', ord_id)
+
+        if not discount.is_valid():
+            messages.warning(request, 'Discount is expired or inactive!', 'warning')
+            return redirect('cart:confirm_cart', ord_id)
+
+        for ticket in order.tickets.all():
+            if not discount.event.filter(id=ticket.event.id).exists():
+                messages.error(request, 'Discount is not for this event!', 'error')
+                return redirect('cart:confirm_cart', ord_id)
+
+        order.discount = discount
+        order.save()
+        messages.success(request, 'Discount has been applied!', 'success')
+        return redirect('cart:confirm_cart', ord_id)
 
 
-
+class DeleteDiscountView(View):
+    def get(self, request, ord_id):
+        order = get_object_or_404(CartModel, id=ord_id)
+        order.discount = None
+        order.save()
+        messages.success(request, 'Discount has been deleted!', 'success')
+        return redirect('cart:confirm_cart', ord_id)

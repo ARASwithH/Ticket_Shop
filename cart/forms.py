@@ -13,6 +13,5 @@ class PaymentMethodForm(forms.Form):
 
 class DiscountForm(forms.Form):
     code = forms.CharField(max_length=10, required=False, widget=forms.TextInput(
-        attrs={'class': 'form-control w-25 me-3',
-               'placeholder': 'Discount Code'}))
+        attrs={'class': 'form-control me-3'}))
 
