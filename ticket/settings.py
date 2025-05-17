@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "accounts.apps.AccountsConfig",
     "events.apps.ShopConfig",
     "cart.apps.CartConfig",
+    "panel.apps.PanelConfig",
 ]
 
 MIDDLEWARE = [

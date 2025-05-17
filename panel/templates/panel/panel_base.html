@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+	<div class="sidebar d-flex flex-column p-3 shadow">
+    <ul class="nav nav-pills flex-column mb-auto">
+        <li class="nav-item">
+            <a href="#" class="nav-link link-dark">Index</a>
+        </li>
+        <li>
+            <a href="#" class="nav-link link-dark">Events</a>
+        </li>
+        <li>
+            <a href="#" class="nav-link link-dark">Tickets</a>
+        </li>
+        <li>
+            <a href="#" class="nav-link link-dark">Payments</a>
+        </li>
+        <li>
+            <a href="#" class="nav-link link-dark">Orders</a>
+        </li>
+        <li>
+            <a href="#" class="nav-link link-dark">Account Management</a>
+        </li>
+    </ul>
+</div>
+
+<div class="content">
+    {% block content %}
+
+    {% endblock %}
+</div>
+
+{#<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>#}
+{% endblock %}
