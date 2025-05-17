@@ -53,15 +53,6 @@ class Cart:
         self.session['CART_SESSION_ID'] = {}
         self.save()
 
-    def save_payment_info(self, payment_method, total_price, status='complete'):
-
-        Payment.objects.create(
-            from_user=self.user,
-            amount=total_price,
-            payment_method=payment_method,
-            status=status
-        )
-
     def save_tickets(self):
         event_ids = self.cart.keys()
         events = Event.objects.filter(id__in=event_ids)

@@ -7,8 +7,7 @@ from events.forms import AddCartForm
 from accounts.forms import UserUpdateForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import PaymentMethodForm, DiscountForm
-from .models import CartModel
-from .models import DiscountCode
+from .models import CartModel, DiscountCode, Payment
 
 
 # Create your views here.
@@ -25,7 +24,7 @@ class CreatOrderView(View):
         cart = Cart(request)
         tickets = cart.save_tickets()
         orders = cart.save_cart(tickets)
-        print(orders.id)
+        cart.clear()
         return redirect('cart:confirm_cart', orders.id)
 
 
@@ -74,21 +73,41 @@ class ConfirmCartView(View):
         if form1.is_valid() and form2.is_valid():
             form1.save()
             pay_method = form2.cleaned_data['payment_methods']
-            total_price = order.total_price
+
+            if order.discount is None:
+                total_price = order.get_total_price()
+            else:
+                total_price = order.get_discounted_total_price()
 
             payment_response = self.send_payment(request)
 
             if payment_response:
-                cart.save_payment_info(pay_method, total_price, status='success')
+
+                Payment.objects.create(
+                    from_user=request.user,
+                    amount=total_price,
+                    payment_method=pay_method,
+                    status='1'
+                )
+
                 order.paid = True
+                order.save()
+
                 for ticket in order.tickets.all():
                     ticket.paid = True
+                    ticket.save()
+
                 order.change_event_quantity()
-                cart.clear()
                 messages.success(request, 'Your payment was successful!', 'success')
                 return redirect('home:home')
             else:
-                cart.save_payment_info(pay_method, total_price, status='error')
+                Payment.objects.create(
+                    from_user=request.user,
+                    amount=total_price,
+                    payment_method=pay_method,
+                    status='0'
+                )
+
                 messages.warning(request, 'Your payment has error!', 'warning')
                 return render(request, 'cart/final_view.html', {'form1': form1,
                                                                 'form2': form2,
