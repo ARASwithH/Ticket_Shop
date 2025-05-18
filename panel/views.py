@@ -6,11 +6,21 @@ from accounts.models import User
 from accounts.forms import UserUpdateForm
 
 
+
 # Create your views here.
 
 class IndexView(View):
     def get(self, request):
         return render(request, 'panel/index.html')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['order'] = CartModel.objects.filter(user=self.request.user, paid=True)
+        user_events = Event.objects.filter(user=self.request.user)
+        categories = user_events.values_list('category', flat=True).distinct()
+        related_events = Event.objects.filter(category__in=categories).exclude(user=self.request.user)
+        context['related'] = related_events
+        return context
 
 
 class EventsView(ListView):

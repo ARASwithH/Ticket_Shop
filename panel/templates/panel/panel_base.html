@@ -22,10 +22,10 @@
                 <a href="{% url 'panel:orders' %}" class="nav-link {% if request.path == '/panel/orders/' %}active text-white bg-primary{% else %}link-dark{% endif %}">Orders</a>
             </li>
             <li>
-                <a href="{% url 'panel:update' %}" class="nav-link {% if request.path == '/panel/update/' %}active text-white bg-primary{% else %}link-dark{% endif %}">Account Management</a>
+                <a href="{% url 'panel:update' %}" class="nav-link {% if request.path == '/panel/update/' %}active text-white bg-primary{% else %}link-dark{% endif %}">Account Manager</a>
             </li>
             <li>
-                <a href="{% url 'accounts:logout' %}" class="nav-link text-white bg-danger">Logout</a>
+                <a href="{% url 'accounts:logout' %}" class="nav-link text-danger">Logout</a>
             </li>
         </ul>
     </div>

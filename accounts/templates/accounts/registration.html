@@ -3,7 +3,7 @@
 {% block body %}
     <div class="d-flex justify-content-center align-items-center vh-100">
         <form method="POST" class="col-md-4 p-4 border rounded shadow bg-white">
-            <h2 class="mb-3 text-center">{{ name }}</h2>
+            <h2 class="mb-3 text-center text-dark">{{ name }}</h2>
             {% csrf_token %}
             {% for field in form %}
                 <div class="mb-3">

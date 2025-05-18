@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-<div class="container mt-4">
+<div class="container mt-4 shadow-lg">
     <h1 class="text-center mb-4">Your Events</h1>
 
     <div class="row">
@@ -43,7 +43,7 @@
         <a href="?page={{ events.previous_page_number }}" class="btn btn-outline-primary">Previous</a>
         {% endif %}
 
-        <span class="mx-2">Page {{ events.number }} of {{ events.paginator.num_pages }}</span>
+        <span class="mx-2 text-light">Page {{ events.number }} of {{ events.paginator.num_pages }}</span>
 
         {% if events.has_next %}
         <a href="?page={{ events.next_page_number }}" class="btn btn-outline-primary">Next</a>

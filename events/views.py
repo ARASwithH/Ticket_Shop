@@ -19,7 +19,6 @@ class EventListView(ListView):
     def get_queryset(self):
         queryset = super().get_queryset()
 
-        # Ordering
         order_by = self.request.GET.get('order_by')
         if order_by == 'price_asc':
             queryset = queryset.order_by('price_per_ticket')
@@ -30,7 +29,6 @@ class EventListView(ListView):
         elif order_by == 'oldest':
             queryset = queryset.order_by('-start_date')
 
-        # Filter by category
         categories = self.request.GET.getlist('category')
         if categories:
             queryset = queryset.filter(category__slug__in=categories).distinct()
