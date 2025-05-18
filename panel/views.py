@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic import ListView, View
 from events.models import Event
 from cart.models import CartModel, Ticket, Payment, DiscountCode
@@ -72,7 +72,7 @@ class AlterAccountView(View):
     def post(self, request):
         form = self.form_class(request.POST, instance=request.user)
         if form.is_valid():
-            existing_user = models.User.objects.filter(
+            existing_user = User.objects.filter(
                 phone_number=form.cleaned_data['phone_number']
             ).exclude(pk=request.user.pk).first()
 

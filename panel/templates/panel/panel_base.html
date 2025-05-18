@@ -24,6 +24,9 @@
             <li>
                 <a href="{% url 'panel:update' %}" class="nav-link {% if request.path == '/panel/update/' %}active text-white bg-primary{% else %}link-dark{% endif %}">Account Management</a>
             </li>
+            <li>
+                <a href="{% url 'accounts:logout' %}" class="nav-link text-white bg-danger">Logout</a>
+            </li>
         </ul>
     </div>
 
