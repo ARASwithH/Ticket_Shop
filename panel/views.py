@@ -1,6 +1,9 @@
 from django.shortcuts import render
 from django.views.generic import ListView, View
 from events.models import Event
+from cart.models import CartModel, Ticket, Payment, DiscountCode
+from accounts.models import User
+
 
 # Create your views here.
 
@@ -18,17 +21,43 @@ class EventsView(ListView):
         return Event.objects.filter(organizer=self.request.user)
 
 
-
 class TicketsView(ListView):
-    pass
+    model = Ticket
+    template_name = 'panel/tickets.html'
+    context_object_name = 'tickets'
+
+    def get_queryset(self):
+        return Ticket.objects.filter(user=self.request.user)
 
 
 class PaymentsView(ListView):
-    pass
+    model = Payment
+    template_name = 'panel/payment.html'
+    context_object_name = 'payments'
+
+    def get_queryset(self):
+        user = User.objects.get(id=self.request.user.id)
+        for item in Payment.objects.filter(from_user=self.request.user.id):
+            print(item)
+        return Payment.objects.filter(from_user=self.request.user.id)
 
 
 class OrdersView(ListView):
-    pass
+    model = CartModel
+    template_name = 'panel/orders.html'
+    context_object_name = 'carts'
+
+    def get_queryset(self):
+        return CartModel.objects.filter(user=self.request.user)
+
+
+class DiscountsView(ListView):
+    model = DiscountCode
+    template_name = 'panel/discounts.html'
+    context_object_name = 'discounts'
+
+    def get_queryset(self):
+        return DiscountCode.objects.filter(user=self.request.user)
 
 
 class AlterAccountView(View):

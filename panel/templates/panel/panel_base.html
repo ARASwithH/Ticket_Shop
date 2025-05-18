@@ -13,13 +13,13 @@
                 <a href="{% url 'panel:events' %}" class="nav-link {% if request.path == '/panel/events/' %}active text-white bg-primary{% else %}link-dark{% endif %}">Events</a>
             </li>
             <li>
-                <a href="#" class="nav-link {% if request.path == '/panel/tickets/' %}active text-white bg-primary{% else %}link-dark{% endif %}">Tickets</a>
+                <a href="{% url 'panel:tickets' %}" class="nav-link {% if request.path == '/panel/tickets/' %}active text-white bg-primary{% else %}link-dark{% endif %}">Tickets</a>
             </li>
             <li>
-                <a href="#" class="nav-link {% if request.path == '/panel/payments/' %}active text-white bg-primary{% else %}link-dark{% endif %}">Payments</a>
+                <a href="{% url 'panel:payments' %}" class="nav-link {% if request.path == '/panel/payments/' %}active text-white bg-primary{% else %}link-dark{% endif %}">Payments</a>
             </li>
             <li>
-                <a href="#" class="nav-link {% if request.path == '/panel/orders/' %}active text-white bg-primary{% else %}link-dark{% endif %}">Orders</a>
+                <a href="{% url 'panel:orders' %}" class="nav-link {% if request.path == '/panel/orders/' %}active text-white bg-primary{% else %}link-dark{% endif %}">Orders</a>
             </li>
             <li>
                 <a href="#" class="nav-link {% if request.path == '/panel/account/' %}active text-white bg-primary{% else %}link-dark{% endif %}">Account Management</a>

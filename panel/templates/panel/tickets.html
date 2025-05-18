@@ -1,0 +1,38 @@
+{% extends 'panel/panel_base.html' %}
+
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+<div class="container my-5">
+    <h2 class="mb-4 text-center">Your Tickets</h2>
+
+    {% if tickets %}
+        <div class="row g-4">
+            {% for ticket in tickets %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card shadow-sm border-0 h-100">
+                        <div class="card-body">
+                            <h5 class="card-title mb-2">
+                                <i class="bi bi-calendar-event me-2 text-primary"></i>{{ ticket.event.name }}
+                            </h5>
+                            <p class="card-text mb-1"><i class="bi bi-hash me-2"></i>Amount: <strong>{{ ticket.quantity }}</strong></p>
+                            <p class="card-text mb-1"><i class="bi bi-currency-dollar me-2"></i>Price per ticket: <strong>{{ ticket.event.price_per_ticket }}</strong></p>
+                            <p class="card-text mb-3"><i class="bi bi-wallet2 me-2"></i>Total: <strong>{{ ticket.get_total_price }}</strong></p>
+
+                            {% if ticket.paid %}
+                                <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Paid</span>
+                            {% else %}
+                                <span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i>Unpaid</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center" role="alert">
+            <i class="bi bi-ticket-perforated-fill me-2"></i>No tickets found.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

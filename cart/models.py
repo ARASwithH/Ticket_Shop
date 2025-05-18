@@ -16,6 +16,7 @@ def generate_unique_code(length=10):
             return code
 
 class DiscountCode(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     code = models.CharField(max_length=10, unique=True, editable=False)
     event = models.ManyToManyField(Event, related_name='discount_codes')
     discount_percent = models.PositiveIntegerField(help_text="e.g., 10 for 10%")
@@ -39,7 +40,7 @@ class Payment(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     payment_method = models.CharField(max_length=20)
     timestamp = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(max_length=20, default='completed')
+    status = models.CharField(max_length=20, default='0')
 
     def __str__(self):
         return f'{str(self.from_user)} - {self.amount}'
@@ -75,7 +76,7 @@ class CartModel(models.Model):
 
     def get_discounted_total_price(self):
         if self.discount is not None:
-            return self.total_price * self.discount.discount_percent / 100
+            return self.total_price * (100 - self.discount.discount_percent) / 100
 
     def get_total_price(self):
         return self.total_price
