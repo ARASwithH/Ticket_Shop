@@ -3,6 +3,7 @@ from django.views.generic import ListView, View
 from events.models import Event
 from cart.models import CartModel, Ticket, Payment, DiscountCode
 from accounts.models import User
+from accounts.forms import UserUpdateForm
 
 
 # Create your views here.
@@ -61,4 +62,24 @@ class DiscountsView(ListView):
 
 
 class AlterAccountView(View):
-    pass
+    form_class = UserUpdateForm
+    template_name = 'panel/update.html'
+
+    def get(self, request):
+        form = self.form_class(instance=request.user)
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
+        form = self.form_class(request.POST, instance=request.user)
+        if form.is_valid():
+            existing_user = models.User.objects.filter(
+                phone_number=form.cleaned_data['phone_number']
+            ).exclude(pk=request.user.pk).first()
+
+            if existing_user:
+                form.add_error('phone_number', 'This phone number is already in use.')
+                return render(request, self.template_name, {'form': form})
+
+            form.save()
+            return redirect('panel:index')
+        return render(request, self.template_name, {'form': form})
