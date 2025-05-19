@@ -27,6 +27,9 @@
           <li class="nav-item">
               <a class="nav-link" href="{% url 'events:list' %}">Events</a>
           </li>
+          <li class="nav-item">
+              <a class="nav-link" href="{% url 'cart:cart_view' %}">Cart ({{ cart|length }} items in cart)</a>
+          </li>
       
       
       </ul>

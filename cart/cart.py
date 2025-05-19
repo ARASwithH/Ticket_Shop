@@ -13,6 +13,10 @@ class Cart:
             cart = self.session['CART_SESSION_ID'] = {}
         self.cart = cart
 
+    def __len__(self):
+        return sum(item['quantity'] for item in self.cart.values())
+
+
     def __iter__(self):
         event_ids = self.cart.keys()
         events = Event.objects.filter(id__in=event_ids)
