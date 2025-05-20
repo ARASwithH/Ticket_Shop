@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "events.apps.ShopConfig",
     "cart.apps.CartConfig",
     "panel.apps.PanelConfig",
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -138,3 +139,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 LOGIN_URL = 'accounts:login'
 
 STATIC_URL = '/static/'
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_TIMEZONE = 'Asia/Tehran'
