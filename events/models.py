@@ -30,7 +30,12 @@ class Event(models.Model):
     organizer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='events')
     image = models.ImageField(upload_to='events/%Y/%m/%d/', null=True, blank=True)
     is_active = models.BooleanField(default=True)
-    category = models.ManyToManyField(Category, related_name='events', default=0)
+    category = models.ManyToManyField(Category, related_name='events', blank=True)
 
     def __str__(self):
         return self.name
+
+    def get_categories(self):
+        return self.category.all()
+
+

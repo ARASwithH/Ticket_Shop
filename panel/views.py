@@ -6,21 +6,11 @@ from accounts.models import User
 from accounts.forms import UserUpdateForm
 
 
-
 # Create your views here.
 
 class IndexView(View):
     def get(self, request):
         return render(request, 'panel/index.html')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['order'] = CartModel.objects.filter(user=self.request.user, paid=True)
-        user_events = Event.objects.filter(user=self.request.user)
-        categories = user_events.values_list('category', flat=True).distinct()
-        related_events = Event.objects.filter(category__in=categories).exclude(user=self.request.user)
-        context['related'] = related_events
-        return context
 
 
 class EventsView(ListView):
@@ -77,7 +67,15 @@ class AlterAccountView(View):
 
     def get(self, request):
         form = self.form_class(instance=request.user)
-        return render(request, self.template_name, {'form': form})
+
+        total_expenses = Payment.get_total_amount(request.user)
+        most_common_categories = Ticket.get_most_common_categories(request.user)
+        payment_method = Payment.get_most_common_payment_method(request.user)
+
+        return render(request, self.template_name, {'form': form,
+                                                    'total_expenses': total_expenses,
+                                                    'common_payment_method': payment_method,
+                                                    'most_common_categories': most_common_categories})
 
     def post(self, request):
         form = self.form_class(request.POST, instance=request.user)
