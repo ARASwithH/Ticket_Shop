@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.text import slugify
 from accounts.models import User
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 # Create your models here.
@@ -30,7 +31,21 @@ class Event(models.Model):
     organizer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='events')
     image = models.ImageField(upload_to='events/%Y/%m/%d/', null=True, blank=True)
     is_active = models.BooleanField(default=True)
-    category = models.ManyToManyField(Category, related_name='events', default=0)
+    rated = models.BooleanField(default=False)
+    rate = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(5)], null=True, blank=True)
+    category = models.ManyToManyField(Category, related_name='events', blank=True)
 
     def __str__(self):
         return self.name
+
+    def update_rate(self):
+        from django.db.models import Avg
+        result = self.event_rates.aggregate(avg=Avg('value'))
+        self.rate = round(result['avg'], 1) if result['avg'] else None
+        self.save()
+
+class Rate(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='event_rates')
+    value = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(5)], null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_rates')
+

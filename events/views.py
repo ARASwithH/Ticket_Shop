@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, CreateView, UpdateView
-from .forms import EventForm, AddCartForm
-from .models import Event, Category
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, FormView
+from urllib3 import request
+from .forms import EventForm, AddCartForm , RateForm
+from .models import Event, Category , Rate
+from cart.models import Ticket
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 
@@ -78,4 +80,29 @@ class EventUpdateView(LoginRequiredMixin, UpdateView):
         form.instance.organizer = self.request.user
         messages.success(self.request, 'Your event has been updated.')
         return super().form_valid(form)
+
+class RateEvent(FormView):
+
+    template_name = 'events/event_rate.html'
+    form_class = RateForm
+    success_url = reverse_lazy('events:list')
+    def get_object(self):
+        return Event.objects.get(pk=self.kwargs['pk'])
+
+    def form_valid(self, form):
+        event = self.get_object()
+        user = self.request.user
+        if Ticket.objects.filter(event=event, user=user).exists():
+            if Rate.objects.filter(event=event, user=user).exists():
+                messages.error(self.request, 'you have rated this event before!')
+                return self.form_invalid(form)
+            rate = form.cleaned_data['rate']
+            Rate.objects.create(event=self.get_object() ,value=rate , user = self.request.user)
+            self.get_object().update_rate()
+            messages.success(self.request, 'Rate has been added.')
+            return super().form_valid(form)
+        else:
+            return redirect('events:list', pk=event.pk)
+
+
 

@@ -10,6 +10,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         tickets = Ticket.objects.all()
         for ticket in tickets:
-            if ticket.event.start_date.day == timezone.now().day:
+            if ticket.event.start_date.day >= timezone.now().day:
                 utils.send_reminder(ticket)
 

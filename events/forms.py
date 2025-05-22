@@ -37,3 +37,7 @@ class AddCartForm(forms.Form):
                     'class': 'form-control mb-2 w-25',
                 })
             )
+
+
+class RateForm(forms.Form):
+    rate = forms.IntegerField(min_value=0, max_value=5)
