@@ -104,12 +104,12 @@ class RateEvent(FormView):
         user = self.request.user
         if Ticket.objects.filter(event=event, user=user).exists():
             if Rate.objects.filter(event=event, user=user).exists():
-                messages.error(self.request, 'you have rated this event before!')
+                messages.error(self.request, 'you have rated this event before!', 'error')
                 return self.form_invalid(form)
             rate = form.cleaned_data['rate']
             Rate.objects.create(event=self.get_object() ,value=rate , user = self.request.user)
             self.get_object().update_rate()
-            messages.success(self.request, 'Rate has been added.')
+            messages.success(self.request, 'Rate has been added.', 'success')
             return super().form_valid(form)
         else:
             return redirect('events:list', pk=event.pk)
