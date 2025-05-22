@@ -4,6 +4,7 @@ from accounts.models import User
 from django.utils import timezone
 import string
 import random
+from collections import Counter
 
 
 # Create your models here.
@@ -45,6 +46,26 @@ class Payment(models.Model):
     def __str__(self):
         return f'{str(self.from_user)} - {self.amount}'
 
+    @classmethod
+    def get_total_amount(cls, user):
+        all_payments = cls.objects.filter(from_user=user)
+        total_expenses = 0
+        for payment in all_payments:
+            total_expenses += payment.amount
+
+        return total_expenses
+
+    @classmethod
+    def get_most_common_payment_method(cls, user):
+        all_payments = cls.objects.filter(from_user=user)
+        method_counter = Counter()
+
+        for payment in all_payments:
+            method_counter.update([payment.payment_method])
+
+        return method_counter.most_common(3)
+
+
 
 class Ticket(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tickets')
@@ -57,6 +78,17 @@ class Ticket(models.Model):
 
     def __str__(self):
         return f'{self.user} - {self.event} - {self.quantity}'
+
+    @classmethod
+    def get_most_common_categories(cls, user):
+        all_tickets = cls.objects.filter(user=user)
+        category_counter = Counter()
+
+        for ticket in all_tickets:
+            categories = ticket.event.get_categories()
+            category_counter.update(cat.name for cat in categories)
+
+        return category_counter.most_common(5)
 
 
 class CartModel(models.Model):

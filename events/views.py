@@ -7,6 +7,7 @@ from .models import Event, Category , Rate
 from cart.models import Ticket
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
+from django.db.models import Q
 
 
 
@@ -20,6 +21,14 @@ class EventListView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
+
+        query = self.request.GET.get('search')
+        print("Search query:", query)
+
+        if query:
+            queryset = queryset.filter(
+                Q(name__icontains=query) | Q(description__icontains=query)
+            )
 
         order_by = self.request.GET.get('order_by')
         if order_by == 'price_asc':
@@ -40,7 +49,8 @@ class EventListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['categories'] = Category.objects.all()
-        context['selected_categories'] = self.request.GET.getlist('category')  # ✅ add this
+        context['selected_categories'] = self.request.GET.getlist('category')
+        context['search_query'] = self.request.GET.get('search', '')
         return context
 
 
