@@ -1,37 +1,50 @@
 <nav class="navbar sticky-top bg-primary shadow-lg" data-bs-theme="dark">
-  <div class="container-fluid">
-      
-    <a class="navbar-brand" href="{% url 'home:home' %}">Shop</a>
-      
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
+  <div class="container-fluid d-flex justify-content-between align-items-center">
+
+    <!-- Left side: Brand, Cart, Search -->
+    <div class="d-flex align-items-center">
+      <a class="navbar-brand" href="{% url 'home:home' %}">Shop</a>
+
+      <!-- Cart link -->
+      <a class="nav-link text-white me-3" href="{% url 'cart:cart_view' %}">
+        Cart ({{ cart|length }} items in cart)
+      </a>
+        
+    </div>
+
+
+    <div class="d-flex align-items-center">
+    <form class="d-flex ms-2" role="search" method="GET" action="{% url 'events:list' %}">
+       <input class="form-control me-2" type="search" name="search" placeholder="Search..." aria-label="Search" value="{{ search_query }}">
+      <button class="btn btn-outline-light" type="submit">Search</button>
+    </form>
+    <!-- Toggler button -->
+    <button class="navbar-toggler ms-2" type="button" data-bs-toggle="collapse"
+        data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+        aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
     </button>
-  
-      
+
+    </div>
+
+    <!-- Right side: Collapsible content -->
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav">
-      
-          {% if request.user.is_authenticated %}
-          <li class="nav-item">
-              <a class="nav-link" href="{% url 'panel:index' %}">Profile</a>
-          </li>
-          {% else %}
-          	<li class="nav-item">
-              <a class="nav-link" href="{% url 'accounts:registration' %}">Registration</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'accounts:login' %}">Login</a>
-            </li>
-          {% endif %}
-      
-          <li class="nav-item">
-              <a class="nav-link" href="{% url 'events:list' %}">Events</a>
-          </li>
-          <li class="nav-item">
-              <a class="nav-link" href="{% url 'cart:cart_view' %}">Cart ({{ cart|length }} items in cart)</a>
-          </li>
-      
-      
+      <ul class="navbar-nav ms-auto">
+        {% if request.user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'panel:index' %}">Profile</a>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'accounts:registration' %}">Registration</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'accounts:login' %}">Login</a>
+        </li>
+        {% endif %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'events:list' %}">Events</a>
+        </li>
       </ul>
     </div>
   </div>
