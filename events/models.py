@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.text import slugify
 from accounts.models import User
+from django.utils import timezone
 
 
 # Create your models here.
@@ -22,6 +23,7 @@ class Category(models.Model):
 class Event(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
+    created_at = models.DateTimeField(default=timezone.now)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     location = models.CharField(max_length=255)

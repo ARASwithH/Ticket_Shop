@@ -3,13 +3,17 @@
 
     <!-- Left side: Brand, Cart, Search -->
     <div class="d-flex align-items-center">
-      <a class="navbar-brand" href="{% url 'home:home' %}">Shop</a>
+      <a class="navbar-brand" href="{% url 'home:home' %}">Ticket Booking</a>
 
       <!-- Cart link -->
-      <a class="nav-link text-white me-3" href="{% url 'cart:cart_view' %}">
-        Cart ({{ cart|length }} items in cart)
+      <a class="me-3 btn btn-outline-light" href="{% url 'cart:cart_view' %}">
+          {% if cart|length == 0 %}
+              Cart <span class="badge bg-info ms-3">Empty</span>
+          {% else %}
+              Cart <span class="badge bg-light ms-3">{{ cart|length }} item</span>
+          {% endif %}
       </a>
-        
+
     </div>
 
 
