@@ -2,43 +2,83 @@
 {% load static %}
 
 {% block body %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold">🎉 Upcoming Events</h2>
+        <p class="text-muted">Discover and join events tailored for you</p>
+    </div>
 
+    <div class="row gx-5">
+        <!-- Sidebar -->
+        <aside class="col-md-3 mb-4">
+            <div class="card border-0 shadow-lg sticky-top" style="top: 20px;">
+                <div class="card-header bg-primary text-white">
+                    <strong>🔍 Sort & Filter</strong>
+                </div>
+                <div class="card-body">
+                    <form method="get" id="filterForm">
+                        <!-- Sort -->
+                        <div class="mb-3">
+                            <label for="orderSelect" class="form-label">Sort by:</label>
+                            <select name="order_by" id="orderSelect" class="form-select" onchange="this.form.submit()">
+                                <option value="">-- Default --</option>
+                                <option value="price_asc" {% if request.GET.order_by == 'price_asc' %}selected{% endif %}>💸 Price: Low to High</option>
+                                <option value="price_desc" {% if request.GET.order_by == 'price_desc' %}selected{% endif %}>💰 Price: High to Low</option>
+                                <option value="newest" {% if request.GET.order_by == 'newest' %}selected{% endif %}>🆕 Newest</option>
+                                <option value="oldest" {% if request.GET.order_by == 'oldest' %}selected{% endif %}>📜 Oldest</option>
+                            </select>
+                        </div>
 
-            <h2 class="text-center mb-4">Upcoming Events</h2>
-
-<div class="container-fluid mt-4">
-
-    <div class="row justify-content-center">
+                        <!-- Categories -->
+                        <div class="mb-2">
+                            <label class="form-label">Categories:</label>
+                            <div class="d-flex flex-column gap-2">
+                                {% for category in categories %}
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="category" value="{{ category.slug }}"
+                                               id="cat{{ forloop.counter }}"
+                                               {% if category.slug in selected_categories %}checked{% endif %}
+                                               onchange="document.getElementById('filterForm').submit()">
+                                        <label class="form-check-label" for="cat{{ forloop.counter }}">
+                                            {{ category.name }}
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </aside>
 
         <!-- Main Content -->
-        <main class="col-md-9 order-2 order-md-1">
-
-
-
-            <!-- Events List -->
-            <div class="row">
+        <main class="col-md-9">
+            <div class="row g-4">
                 {% for event in events %}
-                    <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="col-md-6 col-lg-4">
                         <div class="card h-100 border-0 shadow-lg">
-                            <img src="{% if event.image %}{{ event.image.url }}{% else %}{% static 'events/images/default_event_image.webp' %}{% endif %}" class="card-img-top rounded-top" alt="{{ event.name }}" style="height: 200px; object-fit: cover;">
+                            <img src="{% if event.image %}{{ event.image.url }}{% else %}{% static 'events/images/default_event_image.webp' %}{% endif %}"
+                                 class="card-img-top"
+                                 alt="{{ event.name }}"
+                                 style="height: 200px; object-fit: cover;">
                             <div class="card-body d-flex flex-column">
-                                <h5 class="card-title">{{ event.name }}</h5>
-                                <p class="card-text text-muted small mb-1">{{ event.description|slice:":100" }}...</p>
-                                <p class="card-text"><i class="bi bi-geo-alt"></i> {{ event.location }}</p>
-                                <p class="card-text"><i class="bi bi-calendar-event"></i> {{ event.start_date|date:"M d, Y H:i" }}</p>
-                                <p class="card-text"><strong>Price:</strong> ${{ event.price_per_ticket }}</p>
-                                <p class="card-text"><strong>Capacity:</strong> {{ event.capacity }}</p>
-
-                                <div class="mt-auto">
-                                    <p class="mb-2">
-                                        {% for category in event.category.all %}
-                                            <span class="badge bg-secondary">{{ category.name }}</span>
-                                        {% empty %}
-                                            <span class="text-muted">No categories</span>
-                                        {% endfor %}
-                                    </p>
-                                    <a href="{% url 'events:detail' event.id %}" class="btn btn-outline-primary w-100">View Details</a>
+                                <h5 class="card-title fw-semibold">{{ event.name }}</h5>
+                                <p class="text-muted small mb-1">{{ event.description|truncatechars:80 }}</p>
+                                <div class="mb-2">
+                                    <i class="bi bi-geo-alt"></i> {{ event.location }}<br>
+                                    <i class="bi bi-calendar-event"></i> {{ event.start_date|date:"M d, Y H:i" }}
                                 </div>
+                                <div class="small mb-2">
+                                    💵 <strong>${{ event.price_per_ticket }}</strong> | 👥 {{ event.capacity }}
+                                </div>
+                                <div class="mb-2">
+                                    {% for category in event.category.all %}
+                                        <span class="badge bg-light text-dark border">{{ category.name }}</span>
+                                    {% empty %}
+                                        <span class="text-muted">No categories</span>
+                                    {% endfor %}
+                                </div>
+                                <a href="{% url 'events:detail' event.id %}" class="btn btn-outline-primary mt-auto w-100">View Details</a>
                             </div>
                         </div>
                     </div>
@@ -50,76 +90,34 @@
             </div>
 
             <!-- Pagination -->
-            <nav class="mt-4">
-                <ul class="pagination justify-content-center">
-                    {% if events.has_previous %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page=1">First</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ events.previous_page_number }}">Previous</a>
-                        </li>
-                    {% endif %}
+            {% if is_paginated %}
+                <nav class="mt-5">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1">« First</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">‹ Prev</a>
+                            </li>
+                        {% endif %}
 
-                    <li class="page-item disabled">
-                        <span class="page-link">Page {{ events.number }} of {{ events.paginator.num_pages }}</span>
-                    </li>
+                        <li class="page-item disabled">
+                            <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                        </li>
 
-                    {% if events.has_next %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ events.next_page_number }}">Next</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ events.paginator.num_pages }}">Last</a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </nav>
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next ›</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last »</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
         </main>
-
-        <!-- Sidebar -->
-        <aside class="col-md-3 mb-4 order-1 order-md-2">
-            <div class="card shadow-sm border-0 sticky-top" style="top: 20px;">
-                <div class="card-header bg-primary text-white">
-                    <strong>Sort & Filter</strong>
-                </div>
-                <div class="card-body">
-                    <form method="get" id="filterForm">
-
-                        <!-- Sort -->
-                        <div class="mb-3">
-                            <label for="orderSelect" class="form-label">Sort by:</label>
-                            <select name="order_by" id="orderSelect" class="form-select" onchange="this.form.submit()">
-                                <option value="">-- Default --</option>
-                                <option value="price_asc" {% if request.GET.order_by == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
-                                <option value="price_desc" {% if request.GET.order_by == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
-                                <option value="newest" {% if request.GET.order_by == 'newest' %}selected{% endif %}>Newest</option>
-                                <option value="oldest" {% if request.GET.order_by == 'oldest' %}selected{% endif %}>Oldest</option>
-                            </select>
-                        </div>
-
-                        <!-- Categories -->
-                        <div class="mb-2">
-                            <label class="form-label">Categories:</label>
-                            <div class="d-flex flex-column gap-1">
-                                {% for category in categories %}
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="category" value="{{ category.slug }}"
-                                            id="cat{{ forloop.counter }}"
-                                            {% if category.slug in selected_categories %}checked{% endif %}
-                                            onchange="document.getElementById('filterForm').submit()">
-                                        <label class="form-check-label" for="cat{{ forloop.counter }}">
-                                            {{ category.name }}
-                                        </label>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-
-                    </form>
-                </div>
-            </div>
-        </aside>
     </div>
 </div>
 {% endblock %}

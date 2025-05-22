@@ -6,5 +6,5 @@ from events.models import Event
 
 class HomeView(View):
     def get(self, request):
-        events = Event.objects.order_by('-created_at')[:6]
+        events = Event.objects.order_by('created_at')[:6]
         return render(request, 'home/index.html', {'events': events})
