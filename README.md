@@ -1,6 +1,6 @@
 # 🎟️ Ticket Shop
 
-is a Django-based web application that simulates an online ticket booking system for events .
+Django-based web application that simulates an online ticket booking system for events .
 
 ## 📌 Overview
 
