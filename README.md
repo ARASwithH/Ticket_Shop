@@ -1,6 +1,6 @@
 # 🎟️ Ticket Shop
 
-A modular web-based ticket booking platform built with Django. This project demonstrates backend development skills including authentication, order management, task scheduling with Celery, and modular design using Django apps.
+is a Django-based web application that simulates an online ticket booking system for events .
 
 ## 📌 Overview
 
